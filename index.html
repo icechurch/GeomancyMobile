@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Geomancy Shield Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .chart {
+      display: inline-block;
+    }
+    .figure {
+      position: relative;
+      width: 70px;
+      height: 140px;
+      margin: 9px;
+      border: 1px solid black;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .house {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      padding: 2px 4px;
+    }
+    .dot {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      margin: 5px;
+      border-radius: 50%;
+      background-color: black;
+      cursor: pointer;
+    }
+.label {
+  font-size: 10px;
+  position: absolute;
+  bottom: 5px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  left: 50%;
+}
+    .house-info-modal {
+      display: none;
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: white;
+      z-index: 1;
+      padding-top: 60px;
+    }
+    .close {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 40px;
+      margin-left: 50px;
+      cursor: pointer;
+    }
+    .info-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      background-color: #ff0000;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+      cursor: pointer;
+      border: 1px solid #0056b3;
+    }
+    .first-four-mothers {
+      background-color: #FF0000;
+    }
+    .highlighted {
+      background-color: yellow;
+    }
+    .fortune-border {
+      border: 2px solid blue;
+    }
+    .spirit-border {
+      border: 4px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div class="chart">
+
+    <div>
+      <div class="figure" id="figure4">
+        <div class="house">4</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(4, event)">i</div>
+      </div>
+      <div class="figure" id="figure3">
+        <div class="house">3</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(3, event)">i</div>
+      </div>
+      <div class="figure" id="figure2">
+        <div class="house">2</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(2, event)">i</div>
+      </div>
+      <div class="figure" id="figure1">
+        <div class="house">1</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(1, event)">i</div>
+      </div>
+    </div>
+        <div>
+      <div class="figure" id="figure8">
+        <div class="house">8</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(8, event)">i</div>
+      </div>
+      <div class="figure" id="figure7">
+        <div class="house">7</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(7, event)">i</div>
+      </div>
+      <div class="figure" id="figure6">
+        <div class="house">6</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(6, event)">i</div>
+      </div>
+      <div class="figure" id="figure5">
+        <div class="house">5</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(5, event)">i</div>
+      </div>
+    </div>
+    <div>
+      <div class="figure" id="figure12">
+        <div class="house">12</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(12, event)">i</div>
+      </div>
+      <div class="figure" id="figure11">
+        <div class="house">11</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(11, event)">i</div>
+      </div>
+      <div class="figure" id="figure10">
+        <div class="house">10</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(10, event)">i</div>
+      </div>
+      <div class="figure" id="figure9">
+        <div class="house">9</div>
+        <div class="label">Figure Name</div>
+        <div class="info-button" onclick="openHouseInfo(9, event)">i</div>
+      </div>
+    </div>
+    <div>
+      <div class="figure" id="figure14" style="margin-right: 20px;">
+        <div class="house">LW</div>
+      </div>
+      <div class="figure" id="figure13">
+        <div class="house">RW</div>
+      </div>
+    </div>
+    <div>
+      <div class="figure" id="figure15">
+        <div class="house">J</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <button onclick="generateNewShield()">Generate New Shield</button>
+  </div>
+  <div>
+    <div id="viaPunctiPath" style="margin-top: 20px; font-weight: bold;"></div>
+    <div id="partsInfo" style="margin-top: 20px;"></div>
+  </div>
+
+  <!-- House Info Modal/Sidebar -->
+  <div id="houseInfo" class="house-info-modal">
+    <div class="house-info-content">
+      <span class="close" onclick="closeHouseInfo()">&times;</span>
+      <h2 id="houseTitle">House Title</h2>
+      <p id="houseKeywords">Keywords</p>
+    </div>
+  </div>
+
+  <script>
+    const figures = [
+      { name: "Puer",        dots: [1, 1, 2, 1] },
+      { name: "Puella",      dots: [1, 2, 1, 1] }, 
+      { name: "Albus",       dots: [2, 2, 1, 2] },
+      { name: "Rubeus",      dots: [2, 1, 2, 2] },
+      { name: "Laetitia",    dots: [1, 2, 2, 2] },
+      { name: "Tristitia",   dots: [2, 2, 2, 1] },
+      { name: "Acquisitio",  dots: [2, 1, 2, 1] },
+      { name: "Amissio",     dots: [1, 2, 1, 2] },
+      { name: "Fortuna Major", dots: [2, 2, 1, 1] },
+      { name: "Fortuna Minor", dots: [1, 1, 2, 2] },
+      { name: "Conjunctio",  dots: [2, 1, 1, 2] },
+      { name: "Carcer",      dots: [1, 2, 2, 1] },
+      { name: "Caput Draconis", dots: [2, 1, 1, 1] },
+      { name: "Cauda Draconis", dots: [1, 1, 1, 2] },
+      { name: "Via",         dots: [1, 1, 1, 1] },
+      { name: "Populus",     dots: [2, 2, 2, 2] }
+    ];
+
+    let mother1 = [1, 1, 2, 1]; 
+    let mother2 = [1, 1, 2, 1];
+    let mother3 = [1, 1, 2, 1];
+    let mother4 = [1, 1, 2, 1];
+
+    function generateNewShield() {
+      // Generate random values for each mother figure
+      mother1 = generateRandomFigure();
+      mother2 = generateRandomFigure();
+      mother3 = generateRandomFigure();
+      mother4 = generateRandomFigure();
+
+      // Redraw the chart with the new values
+      createMotherFigure(1, mother1);
+      createMotherFigure(2, mother2);
+      createMotherFigure(3, mother3);
+      createMotherFigure(4, mother4);
+      calculateChart();
+    }
+
+    // Function to generate a random figure
+    function generateRandomFigure() {
+      return Array.from({ length: 4 }, () => Math.random() > 0.5 ? 2 : 1);
+    }
+
+    function createMotherFigure(figure, mother) {
+  const figureElement = document.getElementById(`figure${figure}`);
+  figureElement.querySelectorAll('.dot, .label').forEach(el => el.remove());
+
+  for (let i = 0; i < 4; i++) {
+    const line = document.createElement("div");
+    for (let j = 0; j < mother[i]; j++) {
+      const dot = document.createElement("div");
+      dot.classList.add("dot");
+      if (figure <= 4) {  // Check if the figure is one of the first four mothers
+        dot.classList.add("first-four-mothers");
+      }
+      dot.addEventListener("click", () => toggleDot(figure, i));
+      line.appendChild(dot);
+    }
+    figureElement.appendChild(line);
+  }
+
+  const figureName = figures.find(f => f.dots.join(",") === mother.join(",")).name;
+  const label = document.createElement("div");
+  label.classList.add("label");
+  label.textContent = figureName;
+  figureElement.appendChild(label);
+}
+
+function checkAndDisplayViaPuncti(judge) {
+  // Clear previous highlights and Via Puncti path
+  document.querySelectorAll('.highlighted').forEach(el => el.classList.remove('highlighted'));
+  document.getElementById('viaPunctiPath').textContent = '';
+
+  // Check for Via Puncti in the Judge figure
+  if (judge[0] === 1) {
+    let currentFigure = 15; // Starting with the Judge
+    let viaPunctiPath = ['Judge'];
+    
+    // Trace back through Witnesses and Houses
+    while (currentFigure > 0) {
+      const figure = document.getElementById(`figure${currentFigure}`);
+      figure.classList.add('highlighted'); // Highlight the current figure
+
+      // Determine the next figure in the Via Puncti path
+      if (currentFigure === 15) { // If current figure is Judge, move to Witnesses
+        currentFigure = judge[0] === getFigureDots(14)[0] ? 14 : 13;
+      } else if (currentFigure === 14) { // If current figure is Left Witness
+        currentFigure = findSingleDotFigureInNieces(12, 11);
+      } else if (currentFigure === 13) { // If current figure is Right Witness
+        currentFigure = findSingleDotFigureInNieces(10, 9);
+      } else if (currentFigure === 12) { // If current figure is 12th House
+        currentFigure = findSingleDotFigureInMothersOrDaughters(8, 7);
+      } else if (currentFigure === 11) { // If current figure is 11th House
+        currentFigure = findSingleDotFigureInMothersOrDaughters(6, 5);
+      } else if (currentFigure === 10) { // If current figure is 10th House
+        currentFigure = findSingleDotFigureInMothersOrDaughters(4, 3);
+      } else if (currentFigure === 9) { // If current figure is 9th House
+        currentFigure = findSingleDotFigureInMothersOrDaughters(2, 1);
+      } else { // If current figure is a Mother/Daughter, end tracing
+        break;
+      }
+
+      if (currentFigure !== 0) {
+        const houseName = currentFigure <= 12 ? 'House ' + currentFigure : currentFigure === 13 ? 'Right Witness' : 'Left Witness';
+        viaPunctiPath.push(houseName);
+      }
+    }
+
+    // Display the Via Puncti path
+    document.getElementById('viaPunctiPath').textContent = 'Via Puncti Path: ' + viaPunctiPath.join(' -> ');
+  }
+}
+
+
+function findSingleDotFigureInNieces(house1, house2) {
+  if (getFigureDots(house1)[0] === 1) {
+    return house1;
+  } else if (getFigureDots(house2)[0] === 1) {
+    return house2;
+  }
+  return 0;
+}
+
+function findSingleDotFigureInMothersOrDaughters(house1, house2) {
+  if (getFigureDots(house1)[0] === 1) {
+    return house1;
+  } else if (getFigureDots(house2)[0] === 1) {
+    return house2;
+  }
+  return 0;
+}
+
+function getHouseName(houseNumber) {
+  // Correctly mapping figure IDs to house names or positions
+  const houseNames = {
+    1: 'House 1',
+    2: 'House 2',
+    3: 'House 3',
+    4: 'House 4',
+    5: 'House 5',
+    6: 'House 6',
+    7: 'House 7',
+    8: 'House 8',
+    9: 'House 9',
+    10: 'House 10',
+    11: 'House 11',
+    12: 'House 12',
+    13: 'Right Witness',
+    14: 'Left Witness',
+    15: 'Judge'
+  };
+
+  return houseNames[houseNumber] || `Unknown Position`;
+}
+
+
+
+function getFigureDots(figureNumber) {
+  const figure = document.getElementById(`figure${figureNumber}`);
+  return Array.from(figure.querySelectorAll('.dot')).map(dot => dot.parentElement.children.length);
+}
+
+
+
+function calculateParts() {
+    const geomanticFigures = Array.from({ length: 12 }, (_, i) => getFigureDots(i + 1));
+
+    let totalPoints = 0;
+    let singlePoints = 0;
+
+    geomanticFigures.forEach(figure => {
+      figure.forEach(dots => {
+        totalPoints += dots;
+        if (dots === 1) singlePoints++;
+      });
+    });
+
+    const partOfFortuneHouse = totalPoints % 12 || 12;
+    const partOfSpiritHouse = singlePoints % 12 || 12;
+
+    // Remove existing borders
+    document.querySelectorAll('.fortune-border, .spirit-border').forEach(el => {
+      el.classList.remove('fortune-border', 'spirit-border');
+    });
+
+    // Add borders to the corresponding houses
+    document.getElementById(`figure${partOfFortuneHouse}`).classList.add('fortune-border');
+    document.getElementById(`figure${partOfSpiritHouse}`).classList.add('spirit-border');
+
+    // Display the house information
+    document.getElementById('partsInfo').innerHTML = `
+      <p>Part of Fortune: ${getHouseName(partOfFortuneHouse)}</p>
+      <p>Index: ${getHouseName(partOfSpiritHouse)}</p>
+    `;
+  }
+
+
+    function toggleDot(figure, line) {
+      const mother = eval(`mother${figure}`);
+      mother[line] = mother[line] === 1 ? 2 : 1;
+      createMotherFigure(figure, mother);
+      calculateChart();
+    }
+
+    function calculateChart() {
+      // Daughters
+      const daughter1 = [mother1[0], mother2[0], mother3[0], mother4[0]];
+      const daughter2 = [mother1[1], mother2[1], mother3[1], mother4[1]];
+      const daughter3 = [mother1[2], mother2[2], mother3[2], mother4[2]];
+      const daughter4 = [mother1[3], mother2[3], mother3[3], mother4[3]];
+      
+      drawFigure(5, daughter1);
+      drawFigure(6, daughter2); 
+      drawFigure(7, daughter3);
+      drawFigure(8, daughter4);
+
+      // Nieces  
+      const niece1 = calculateNiece(mother1, mother2);
+      const niece2 = calculateNiece(mother3, mother4);
+      const niece3 = calculateNiece(daughter1, daughter2);
+      const niece4 = calculateNiece(daughter3, daughter4);
+
+      drawFigure(9, niece1);
+      drawFigure(10, niece2);
+      drawFigure(11, niece3); 
+      drawFigure(12, niece4);
+
+      // Witnesses
+      const rightWitness = calculateNiece(niece1, niece2);
+      const leftWitness = calculateNiece(niece3, niece4);
+
+      drawFigure(13, rightWitness);
+      drawFigure(14, leftWitness);
+
+      // Judge
+      const judge = calculateNiece(rightWitness, leftWitness);
+      drawFigure(15, judge);
+      checkAndDisplayViaPuncti(judge);
+
+      calculateParts();
+
+    }
+
+    function calculateNiece(figure1, figure2) {
+      return figure1.map((dot, i) => (dot + figure2[i]) % 2 === 0 ? 2 : 1);
+
+
+    }
+
+    function drawFigure(index, dots) {
+  const figure = document.getElementById(`figure${index}`);
+  // Remove only dot and label elements
+  figure.querySelectorAll('.dot, .label').forEach(el => el.remove());
+
+  for (const numDots of dots) {
+    const line = document.createElement("div");
+    for (let i = 0; i < numDots; i++) {
+      const dot = document.createElement("div");
+      dot.classList.add("dot");
+      line.appendChild(dot);
+    }
+    figure.appendChild(line);
+  }
+
+  const label = document.createElement("div");
+  label.classList.add("label");
+  label.textContent = figures.find(f => f.dots.join(",") === dots.join(",")).name;
+  figure.appendChild(label);
+}
+
+
+    createMotherFigure(1, mother1);
+    createMotherFigure(2, mother2);
+    createMotherFigure(3, mother3);
+    createMotherFigure(4, mother4);
+    calculateChart();
+
+    function openHouseInfo(houseNumber, event) {
+  event.stopPropagation(); // Prevents the event from bubbling up to parent elements
+
+  // Setting the modal content based on the houseNumber
+  document.getElementById('houseTitle').innerHTML = 'House ' + houseNumber + ': ' + houseInfo[houseNumber - 1].name;
+  document.getElementById('houseKeywords').innerHTML = 'Keywords: ' + houseInfo[houseNumber - 1].keywords.join(', ');
+
+  // Displaying the modal
+  document.getElementById('houseInfo').style.display = 'block';
+ 
+}
+
+function closeHouseInfo() {
+  document.getElementById('houseInfo').style.display = 'none';
+}
+
+// House information array
+// House information array
+const houseInfo = [
+  { name: "Vita - Life", keywords: ["Self", "physique", "personality", "outlook", "current state", "origin", "radicality", "awareness", "opinion", "testing accuracy", "physical details"] },
+  { name: "Lucrum - Riches", keywords: ["Finances", "resources", "possessions", "monetary decisions", "financial stability", "economic bearings", "material wealth", "value assessment"] },
+  { name: "Fratres - Brothers", keywords: ["Siblings", "short journeys", "communication", "news", "neighborhood", "local interactions", "brothers", "sisters", "rumors"] },
+  { name: "Genitor - Father", keywords: ["Parents", "ancestry", "heritage", "real estate", "familial roots", "fathers", "mothers", "home", "land", "traditions", "inheritance"] },
+  { name: "Nati - Sons", keywords: ["Children", "creativity", "recreation", "love affairs", "hobbies", "skills", "talents", "speculation", "pleasure", "arts", "self-expression", "accuracy of books & information"] },
+  { name: "Valetudo - Health", keywords: ["Health", "illness dynamics", "service", "employment", "small animals", "aunts and uncles", "staff", "house of ill fortune", "disease", "slaves", "work"] },
+  { name: "Uxor - Wife", keywords: ["Partnerships", "the 'other'", "known rivals", "thievery location", "competition", "love", "marriage", "relationships", "legal matters", "enemies", "nemesis", "contracts", "business", "romantic interests"] },
+  { name: "Mors - Death", keywords: ["Transformation", "the dead", "other people's finances", "legacies", "occult practices", "sorcery", "deaths", "legacies", "wills", "anxiety", "worries", "pain", "restless spirits", "witchcraft", "magic"] },
+  { name: "Itineris - Journeys", keywords: ["Religion", "higher education", "long travels", "divination", "dreams", "philosophical explorations", "art", "science", "theurgy", "law philosophy", "foreign trips"] },
+  { name: "Regnum - Kings", keywords: ["Career", "authority", "public standing", "expertise", "medicine", "recovery methods", "leaders", "employment", "positions", "professions", "authority", "public image", "medicine"] },
+  { name: "Benefacta - Fortune", keywords: ["Luck", "friends", "support", "aspirations", "benefactors", "dreams fulfillment", "fortune", "hopes", "wishes", "general advice", "support structures"] },
+  { name: "Carcer - Prison", keywords: ["Restrictions", "unseen obstacles", "hidden enemies", "repression", "maleficia (witchcraft done to the querent)", "fears", "sorrow", "hospitals", "prisons", "unseen dangers"] }
+];
+
+
+
+ </script>
+<!-- House Info Modal/Sidebar -->
+<div id="houseInfo" class="house-info-modal">
+  <div class="house-info-content">
+    <span class="close" onclick="closeHouseInfo()">&times;</span>
+    <h2 id="houseTitle">House Title</h2>
+    <p id="houseKeywords">Keywords</p>
+  </div>
+</div>
+
+</body>
+</html>
