@@ -373,36 +373,41 @@ function getFigureDots(figureNumber) {
 
 
 function calculateParts() {
-    const geomanticFigures = Array.from({ length: 12 }, (_, i) => getFigureDots(i + 1));
+  const geomanticFigures = Array.from({ length: 12 }, (_, i) => getFigureDots(i + 1));
 
-    let totalPoints = 0;
-    let singlePoints = 0;
+  let totalPoints = 0;
+  let singlePoints = 0;
 
-    geomanticFigures.forEach(figure => {
-      figure.forEach(dots => {
-        totalPoints += dots;
-        if (dots === 1) singlePoints++;
-      });
+  geomanticFigures.forEach(figure => {
+    figure.forEach(dots => {
+      totalPoints += dots;
+      if (dots === 1) singlePoints++;
     });
+  });
 
-    const partOfFortuneHouse = totalPoints % 12 || 12;
-    const partOfSpiritHouse = singlePoints % 12 || 12;
-
-    // Remove existing borders
-    document.querySelectorAll('.fortune-border, .spirit-border').forEach(el => {
-      el.classList.remove('fortune-border', 'spirit-border');
-    });
-
-    // Add borders to the corresponding houses
-    document.getElementById(`figure${partOfFortuneHouse}`).classList.add('fortune-border');
-    document.getElementById(`figure${partOfSpiritHouse}`).classList.add('spirit-border');
-
-    // Display the house information
-    document.getElementById('partsInfo').innerHTML = `
-      <p>Part of Fortune: ${getHouseName(partOfFortuneHouse)}</p>
-      <p>Index: ${getHouseName(partOfSpiritHouse)}</p>
-    `;
+  let partOfSpiritHouse = singlePoints;
+  while (partOfSpiritHouse > 12) {
+    partOfSpiritHouse -= 12;
   }
+  if (partOfSpiritHouse === 0) partOfSpiritHouse = 12;
+
+  const partOfFortuneHouse = 12 - partOfSpiritHouse || 12;
+
+  // Remove existing borders
+  document.querySelectorAll('.fortune-border, .spirit-border').forEach(el => {
+    el.classList.remove('fortune-border', 'spirit-border');
+  });
+
+  // Add borders to the corresponding houses
+  document.getElementById(`figure${partOfFortuneHouse}`).classList.add('fortune-border');
+  document.getElementById(`figure${partOfSpiritHouse}`).classList.add('spirit-border');
+
+  // Display the house information
+  document.getElementById('partsInfo').innerHTML = `
+    <p>Part of Fortune: ${getHouseName(partOfFortuneHouse)}</p>
+    <p>Part of Spirit: ${getHouseName(partOfSpiritHouse)}</p>
+  `;
+}
 
 
     function toggleDot(figure, line) {
